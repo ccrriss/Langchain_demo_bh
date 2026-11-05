@@ -1,0 +1,19 @@
+[project]
+name = "langchain-blackhorse"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "ccrriss", email = "zj7166@mun.ca" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "langchain>=1.4.9",
+]
+
+[project.scripts]
+langchain-blackhorse = "langchain_blackhorse:main"
+
+[build-system]
+requires = ["uv_build>=0.12.5,<0.13.0"]
+build-backend = "uv_build"
