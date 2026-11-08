@@ -15,9 +15,12 @@ dependencies = [
     "python-dotenv>=1.2.4",
 ]
 
-[project.scripts]
-langchain-blackhorse = "langchain_blackhorse:main"
-
 [build-system]
 requires = ["uv_build>=0.12.5,<0.13.0"]
 build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "langchain_cook_assistant"
+
+[dependency-groups]
+dev = []

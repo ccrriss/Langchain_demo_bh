@@ -1,6 +1,8 @@
 # syntax=docker/dockerfile:1
 
-# Not USED yet
+# NOT USED YET 
+
+# WILL UPDATE AFTER USING FASTAPI
 
 # Comments are provided throughout this file to help you get started.
 # If you need more help, visit the Dockerfile reference guide at

@@ -743,6 +743,9 @@ requires-dist = [
     { name = "python-dotenv", specifier = ">=1.2.4" },
 ]
 
+[package.metadata.requires-dev]
+dev = []
+
 [[package]]
 name = "langchain-core"
 version = "1.7.6"
