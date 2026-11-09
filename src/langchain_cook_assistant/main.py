@@ -1,64 +1,58 @@
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+# Get cross-origin frontend ip
+# To avoid that Agent components depending on env variables use only dotenv not pydantic-settings
 from dotenv import load_dotenv
-from langchain.agents import create_agent
-from langchain_core.messages import HumanMessage
-# database with short-term memory
-from langgraph.checkpoint.postgres import PostgresSaver
 import os
-# tools
+import json
+# save agent in app.state in lifespan
+from contextlib import asynccontextmanager
+from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
+from langchain_cook_assistant.agents.cook_assistant_agent import serde
+from langchain.agents import create_agent
 from langchain_cook_assistant.tools.tavily_search import search_tavily
-# schemas
-from langchain_cook_assistant.schemas.cooking_answer import CookAnswer
-# summarize middleware
-from langchain_cook_assistant.middlewares.summarization import summarize_midware
-# config
-from langchain_cook_assistant.configs.cooking_config import cooking_cfg
-# register the return type
-from langgraph.checkpoint.serde.jsonplus import JsonPlusSerializer
-# prompt
 from langchain_cook_assistant.prompts.system_prompt import system_prompt
-
-serde = JsonPlusSerializer(
-    allowed_msgpack_modules=[
-        ("langchain_cook_assistant.schemas.cooking_answer", "CookAnswer")
-    ]
-)
+from langchain_cook_assistant.schemas.cooking_answer import CookAnswer
+from langchain_cook_assistant.middlewares.summarization import summarize_midware
+from langchain_cook_assistant.api import chat
 
 load_dotenv()
 
 # docker pg uri
 PGSAVER_URI = os.getenv("DOCKER_SAVER_DB")
-print(PGSAVER_URI)
 
-with PostgresSaver.from_conn_string(PGSAVER_URI) as checkpoint:
-# 1. initialize the checkpoint
-    checkpoint.serde = serde
-    checkpoint.setup()
-# 2. create the agent
-    agent = create_agent(
-        "openai:qwen3.6-plus",
-        tools=[search_tavily],
-        system_prompt=system_prompt,
-        response_format=CookAnswer,
-        checkpointer=checkpoint,
-        middleware=[summarize_midware],
-    )
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    async with AsyncPostgresSaver.from_conn_string(PGSAVER_URI, serde=serde) as checkpoint:
+        # 1. initialize the checkpoint
+        await checkpoint.setup()
+        # 2. create the agent
+        agent = create_agent(
+                "openai:qwen3.6-plus",
+                tools=[search_tavily],
+                system_prompt=system_prompt,
+                response_format=CookAnswer,
+                checkpointer=checkpoint,
+                middleware=[summarize_midware],
+            )
 
-    # response = agent.invoke(
-    #     {"messages": [HumanMessage(
-    #         content=[
-    #             {"type": "text", "text": "你好我是小贾, 请告诉我图片中的菜能做什么?"},
-    #             {"type": "image", "url": "https://aisearch.cdn.bcebos.com/pic_create/2026-04-10/10/74d52055e4947f8c.jpg"}
-    #         ]),
-    #     ],},
-    #     config=cooking_cfg
-    # )
+        app.state.agent = agent
+        app.state.checkpointer = checkpoint
 
-    response = agent.invoke(
-        {'messages': [HumanMessage(
-            content="我更喜欢第三道菜, 可以说的更详细一点吗?"
-        )]},
-        config=cooking_cfg        
-    )
-    
-    for message in response['messages']:
-        message.pretty_print()
+        yield
+
+    yield
+
+app = FastAPI(title="cook assistant", description="AI cook assistant", version="0.1.0", lifespan=lifespan)
+
+BACKEND_CORS_ORIGINS = json.loads(os.getenv("BACKEND_CORS_ORIGINS", '["http://localhost:3000"]'))
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins = BACKEND_CORS_ORIGINS,
+    allow_credentials = True,
+    allow_methods = ["*"],
+    allow_headers = ["*"]
+)
+
+app.include_router(chat.router)

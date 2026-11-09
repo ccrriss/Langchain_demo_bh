@@ -4,10 +4,11 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 authors = [
-    { name = "ccrriss", email = "zj7166@mun.ca" }
+    { name = "ccrriss", email = "https://github.com/ccrriss/Langchain_demo_bh" }
 ]
 requires-python = ">=3.11"
 dependencies = [
+    "fastapi[standard-no-fastapi-cloud-cli]>=0.162.2",
     "langchain>=1.4.9",
     "langchain-openai>=1.7.4",
     "langchain-tavily>=0.2.18",
