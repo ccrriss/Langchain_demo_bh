@@ -31,7 +31,7 @@ async def lifespan(app: FastAPI):
                 "openai:qwen3.6-plus",
                 tools=[search_tavily],
                 system_prompt=system_prompt,
-                response_format=CookAnswer,
+                # response_format=CookAnswer,
                 checkpointer=checkpoint,
                 middleware=[summarize_midware],
             )
@@ -40,8 +40,6 @@ async def lifespan(app: FastAPI):
         app.state.checkpointer = checkpoint
 
         yield
-
-    yield
 
 app = FastAPI(title="cook assistant", description="AI cook assistant", version="0.1.0", lifespan=lifespan)
 

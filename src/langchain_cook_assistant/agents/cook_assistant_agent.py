@@ -3,6 +3,7 @@ from langchain.messages import HumanMessage, AIMessage
 from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
 # declare the type of agent
 from langgraph.graph.state import CompiledStateGraph
+from collections.abc import AsyncIterator
 
 
 serde = JsonPlusSerializer(
@@ -13,7 +14,7 @@ serde = JsonPlusSerializer(
 
 # agent logic(stream)
 
-async def search_recipes(prompt: str, thread_id: str, agent: CompiledStateGraph) -> list[str]:
+async def search_recipes(prompt: str, thread_id: str, agent: CompiledStateGraph) -> AsyncIterator:
     message = HumanMessage(
         content= prompt
     )
@@ -25,18 +26,10 @@ async def search_recipes(prompt: str, thread_id: str, agent: CompiledStateGraph)
         version="v3"
     )
 
-    # AI_messages includes the content of AIMessage
-    AI_messages = []
-    async for snapshot in stream.values:
-        latest_message = snapshot["messages"][-1]
-        if latest_message.content:
-            if isinstance(latest_message, AIMessage):
-                AI_messages.append(latest_message.content)
+    async for message in stream.messages:
+        async for delta in message.text:
+                yield delta
 
-    if len(AI_messages) > 0:
-        return AI_messages
-    else:
-        return []
 
 async def clear_messages(thread_id: str, checkpointer: AsyncPostgresSaver):
     await checkpointer.adelete_thread(thread_id=thread_id)
