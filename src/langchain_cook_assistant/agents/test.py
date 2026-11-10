@@ -65,6 +65,29 @@ async def main():
             print("Final text:", final_message.text())
             print("Tool calls:", final_message.tool_calls)
 
+        # async for snapshot in response.values:
+        #     messages = snapshot.get("messages", [])
+        #     structured = snapshot.get("structured_response")
+
+        #     print("Message count:", len(messages))
+
+        #     if messages:
+        #         last = messages[-1]
+        #         print("Last type:", type(last).__name__)
+        #         print("Tool calls:", getattr(last, "tool_calls", None))
+
+        #     print("Structured type:", type(structured))
+        #     print("Structured response:", structured)
+        #     print("-" * 40)
+
+        #     if structured is not None:
+        #         for index, msg in enumerate(messages):
+        #             print(index, type(msg).__name__)
+        #             print("Tool calls:", getattr(msg, "tool_calls", None))
+        #             print("Name:", getattr(msg, "name", None))
+
+        #         print("Answer:", structured.answer)
+
 if __name__ == "__main__":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     asyncio.run(main=main())
