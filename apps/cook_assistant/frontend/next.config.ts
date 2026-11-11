@@ -14,6 +14,10 @@ const nextConfig: NextConfig = {
     },
   },
 
+  experimental: {
+    proxyTimeout: 120_000,
+  },
+
   async rewrites() {
     return [
       {
