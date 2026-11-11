@@ -5,7 +5,6 @@ from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
 from langgraph.graph.state import CompiledStateGraph
 from collections.abc import AsyncIterator
 
-
 serde = JsonPlusSerializer(
     allowed_msgpack_modules=[
         ("langchain_cook_assistant.schemas.cooking_answer", "CookAnswer")
