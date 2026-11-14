@@ -25,8 +25,8 @@ async def delete_chat_messages(thread_id: str, request: Request):
 
     await clear_messages(thread_id=thread_id, checkpointer=checkpointer)
 
-@router.get(path="/{thread_id}")
-async def get_chat_messages(thread_id: str, request: Request):
+@router.get(path="/{thread_id}", response_model=list[ChatMessage])
+async def get_chat_messages(thread_id: str, request: Request) -> list[ChatMessage]:
     checkpointer = request.app.state.checkpointer
 
     messages = await get_messages(thread_id=thread_id, checkpointer=checkpointer)

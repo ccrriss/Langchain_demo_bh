@@ -51,6 +51,10 @@ export const fetchStream = async (path: string, options: RequestInit, setMsgHook
         }
     );
 
+    if (!res.ok) {
+        throw new Error("Unknown error");
+    }
+
     // 2. get the stream output from res.body.getReader()
     const reader = res.body?.getReader();
     // 3. prepare the decoder for decoding the array from reader

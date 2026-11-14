@@ -4,6 +4,8 @@ from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
 # declare the type of agent
 from langgraph.graph.state import CompiledStateGraph
 from collections.abc import AsyncIterator
+# import the type of ChatMessage {role, message}
+from langchain_cook_assistant.schemas.chat import ChatMessage
 
 serde = JsonPlusSerializer(
     allowed_msgpack_modules=[
@@ -52,11 +54,15 @@ async def get_messages(thread_id: str, checkpointer: AsyncPostgresSaver):
         return []
 
     # convert the format of messages
-    AI_messages = []
+    all_messages: list[ChatMessage] = []
     for msg in messages:
         if not msg.content:
             continue
         if isinstance(msg, AIMessage):
-            AI_messages.append(msg.content)
+            ai_msg = ChatMessage(role="ai", message=msg.content)
+            all_messages.append(ai_msg)
+        elif isinstance(msg, HumanMessage):
+            human_msg = ChatMessage(role="human", message=msg.content)
+            all_messages.append(human_msg)
 
-    return AI_messages
+    return all_messages
