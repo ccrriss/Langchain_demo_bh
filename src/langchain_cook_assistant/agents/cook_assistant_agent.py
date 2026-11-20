@@ -1,5 +1,5 @@
 from langgraph.checkpoint.serde.jsonplus import JsonPlusSerializer
-from langchain.messages import HumanMessage, AIMessage
+from langchain.messages import HumanMessage, AIMessage, AnyMessage
 from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
 # declare the type of agent
 from langgraph.graph.state import CompiledStateGraph
@@ -49,20 +49,30 @@ async def get_messages(thread_id: str, checkpointer: AsyncPostgresSaver):
     if not channel_values:
         return []
     
-    messages = channel_values.get("messages", [])
+    messages: list[AnyMessage] = channel_values.get("messages", [])
     if not messages:
         return []
 
     # convert the format of messages
     all_messages: list[ChatMessage] = []
+
     for msg in messages:
-        if not msg.content:
-            continue
         if isinstance(msg, AIMessage):
-            ai_msg = ChatMessage(role="ai", message=msg.content)
+            if msg.tool_calls:
+                continue
+
+            text = msg.text
+            if not text.strip():
+                continue
+            
+            ai_msg = ChatMessage(role="ai", message=text)
             all_messages.append(ai_msg)
         elif isinstance(msg, HumanMessage):
-            human_msg = ChatMessage(role="human", message=msg.content)
+            text = msg.text
+            if not text.strip():
+                continue
+
+            human_msg = ChatMessage(role="human", message=text)
             all_messages.append(human_msg)
 
     return all_messages

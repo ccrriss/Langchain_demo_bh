@@ -28,8 +28,8 @@ async def lifespan(app: FastAPI):
         await checkpoint.setup()
         # 2. create the agent
         agent = create_agent(
-                "openai:qwen3.6-plus",
-                # tools=[search_tavily],
+                "openai:qwen3.5-flash",
+                tools=[search_tavily],
                 system_prompt=system_prompt,
                 # response_format=CookAnswer,
                 checkpointer=checkpoint,

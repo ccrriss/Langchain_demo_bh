@@ -3,6 +3,8 @@
 import ChatInput from "@/component/ChatInput";
 import { useState, useEffect, useRef } from "react";
 import { apiFetch, fetchStream } from "@/lib/api";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 
 const path = "/api";
@@ -196,36 +198,75 @@ export default function Page() {
                         </h2>
                     </div>
 
-                    <section className="min-h-0 flex-1 overflow-y-auto px-5 py-6 sm:px-7">
+                    <section className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-5 py-6 sm:px-7">
+                        {/* when processing, display messages in chatMessageList and streaming message seperately
+                            and after processing display all the 
+                            messages in chatMessageList */}
                         {processing ? (
-                            <div>
-                                {chatMessageList.map((chatMessage: ChatMessage) => (
-                                    <p key={chatMessage.id}
-                                        className="w-fit max-w-[92%] whitespace-pre-wrap break-words rounded-2xl rounded-tl-md border border-slate-200
-                                    bg-slate-50 px-5 py-4 text-sm leading-7 text-slate-700 empty:hidden sm:max-w-[85%]"
-                                    >
-                                        From: {chatMessage.role + " : "} {chatMessage.message}
-                                    </p>
+                            <>
+                                {chatMessageList.map((chatMessage: ChatMessage) => 
+                                    chatMessage.role === "human" ? (
+                                        
+                                        <p key={chatMessage.id}
+                                            className="w-fit max-w-[92%] whitespace-pre-wrap break-words px-4 py-3 text-sm leading-7 sm:max-w-[85%]
+                                            ml-auto rounded-2xl rounded-tr-md border border-amber-200 bg-amber-100 text-slate-900"
+                                        >
+                                            {chatMessage.message}
+                                        </p>
+                                    ): (
+                                        <div key={chatMessage.id}
+                                            className="mr-auto w-fit max-w-[92%] sm:max-w-[85%] min-w-0 break-words px-4 py-3
+                                                text-sm leading-7 text-slate-700 bg-transparent
+                                            "
+                                        >
+                                            <div className="prose prose-slate prose-sm max-w-none break-words">
+                                                <ReactMarkdown remarkPlugins={[remarkGfm]} skipHtml>
+                                                    {chatMessage.message}
+                                                </ReactMarkdown>
+                                            </div>
+                                        </div>
                                     ))
                                 }
 
-                                <p className="w-fit max-w-[92%] whitespace-pre-wrap break-words rounded-2xl rounded-tl-md border border-slate-200
-                                    bg-slate-50 px-5 py-4 text-sm leading-7 text-slate-700 empty:hidden sm:max-w-[85%]"
+                                <div 
+                                    className="mr-auto w-fit max-w-[92%] sm:max-w-[85%] min-w-0 break-words px-4 py-3
+                                        text-sm leading-7 text-slate-700 bg-transparent
+                                    "
                                 >
-                                    {message}
-                                </p>
-                            </div>
+                                    <div className="prose prose-slate prose-sm max-w-none break-words">
+                                        <ReactMarkdown remarkPlugins={[remarkGfm]} skipHtml>
+                                            {message}
+                                        </ReactMarkdown>
+                                    </div>
+                                </div>
+                            </>
                         ): (
-                            chatMessageList.map((chatMessage: ChatMessage) => (
-                                <p key={chatMessage.id}
-                                    className="w-fit max-w-[92%] whitespace-pre-wrap break-words rounded-2xl rounded-tl-md border border-slate-200
-                                bg-slate-50 px-5 py-4 text-sm leading-7 text-slate-700 empty:hidden sm:max-w-[85%]"
-                                >
-                                    From: {chatMessage.role + " : "} {chatMessage.message}
-                                </p>
-                            ))
+                            <>
+                            {chatMessageList.map((chatMessage: ChatMessage) => 
+                                chatMessage.role === "human" ? (
+                                    
+                                    <p key={chatMessage.id}
+                                        className="w-fit max-w-[92%] whitespace-pre-wrap break-words px-4 py-3 text-sm leading-7 sm:max-w-[85%]
+                                        ml-auto rounded-2xl rounded-tr-md border border-amber-200 bg-amber-100 text-slate-900"
+                                    >
+                                        {chatMessage.message}
+                                    </p>
+                                ): (
+                                    <div key={chatMessage.id}
+                                        className="mr-auto w-fit max-w-[92%] sm:max-w-[85%] min-w-0 break-words px-4 py-3
+                                            text-sm leading-7 text-slate-700 bg-transparent
+                                        "
+                                    >
+                                        <div className="prose prose-slate prose-sm max-w-none break-words">
+                                            <ReactMarkdown remarkPlugins={[remarkGfm]} skipHtml>
+                                                {chatMessage.message}
+                                            </ReactMarkdown>
+                                        </div>
+                                    </div>
+                                ))
+                            }
+                            </>
                         )}
-                        
                     </section>
                     {/* Input the chat part, follows the chat window */}
                     <div className="shrink-0 border-t border-slate-200/80 bg-white px-4 py-4 sm:px-6">
