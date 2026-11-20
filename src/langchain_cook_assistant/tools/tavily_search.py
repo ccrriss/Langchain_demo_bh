@@ -7,6 +7,7 @@ load_dotenv()
 search_tool = TavilySearch(
     max_results = 5,
     topic="general",
+    include_images=True
 )
 
 @tool
@@ -14,4 +15,4 @@ def search_tavily(query:str):
     """
     Search the web for information based on the user's query
     """
-    return search_tool.invoke(query)
+    return search_tool.invoke({"query": query})
