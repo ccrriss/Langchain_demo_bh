@@ -7,7 +7,8 @@ load_dotenv()
 search_tool = TavilySearch(
     max_results = 5,
     topic="general",
-    include_images=True
+    include_images=True,
+    include_image_descriptions=True
 )
 
 @tool

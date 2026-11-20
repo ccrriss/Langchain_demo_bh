@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 authors = [
-    { name = "ccrriss", email = "https://github.com/ccrriss/Langchain_demo_bh" }
+    { name = "ccrriss" }
 ]
 requires-python = ">=3.11"
 dependencies = [

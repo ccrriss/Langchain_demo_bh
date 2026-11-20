@@ -1,5 +1,5 @@
 from langgraph.checkpoint.serde.jsonplus import JsonPlusSerializer
-from langchain.messages import HumanMessage, AIMessage, AnyMessage
+from langchain.messages import HumanMessage, AIMessage, AnyMessage, ToolMessage
 from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
 # declare the type of agent
 from langgraph.graph.state import CompiledStateGraph
