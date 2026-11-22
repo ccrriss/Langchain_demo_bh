@@ -12,8 +12,8 @@ search_tool = TavilySearch(
 )
 
 @tool
-def search_tavily(query:str):
+async def search_tavily(query:str):
     """
     Search the web for information based on the user's query
     """
-    return search_tool.invoke({"query": query})
+    return await search_tool.ainvoke({"query": query})
