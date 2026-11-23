@@ -1,0 +1,7 @@
+{
+  "dependencies": ["."],
+  "graphs": {
+    "agent": "./src/langchain_marry_assistant/main.py:main"
+  },
+  "env": "./.env"
+}

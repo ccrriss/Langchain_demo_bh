@@ -5,12 +5,9 @@
 from langchain_marry_assistant.mcp.kiwi_mcp import KIWI_MCP_CONNECTION
 from langchain_marry_assistant.mcp.time_mcp import TIME_MCP_CONNECTION
 from langchain.agents import create_agent
-from dotenv import load_dotenv
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from langchain.tools import BaseTool
 from langchain_marry_assistant.middlewares.model_fallback_middleware import model_fallback_middleware
-
-load_dotenv()
 
 async def get_tools() -> list[BaseTool]:
     client = MultiServerMCPClient(

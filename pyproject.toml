@@ -24,7 +24,12 @@ requires = ["uv_build>=0.12.5,<0.13.0"]
 build-backend = "uv_build"
 
 [tool.uv.build-backend]
-module-name = "langchain_cook_assistant"
+module-name = [
+    "langchain_cook_assistant",
+    "langchain_marry_assistant"
+]
 
 [dependency-groups]
-dev = []
+dev = [
+    "langgraph-cli[inmem]>=0.4.43",
+]
